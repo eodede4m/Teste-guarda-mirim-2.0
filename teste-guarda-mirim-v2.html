@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Teste Guarda Mirim — por André Barbosa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F3F6FA;--surface:#FFFFFF;--ink:#0B1B33;--muted:#4D5E76;--navy:#0B2545;--blue:#1F5FBF;--gold:#F4B400;--ok:#157A55;--bad:#C23B3B;--line:#D6DEE9;--okbg:#E3F5EC;--badbg:#FBE7E7;
+--display:"Archivo","Arial Narrow",Arial,sans-serif;--body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0A1424;--surface:#12213A;--ink:#EAF0F9;--muted:#9FB0C8;--blue:#7FB0FF;--line:#243A5E;--ok:#58D6A6;--bad:#FF9A9A;--okbg:#10372B;--badbg:#3E1B1F}}
+:root[data-theme="dark"]{--bg:#0A1424;--surface:#12213A;--ink:#EAF0F9;--muted:#9FB0C8;--blue:#7FB0FF;--line:#243A5E;--ok:#58D6A6;--bad:#FF9A9A;--okbg:#10372B;--badbg:#3E1B1F}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body)}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0}
+a{color:var(--blue)}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+/* portão de entrada */
+#gate{position:fixed;inset:0;background:radial-gradient(circle at 30% 20%,#13306b,var(--navy) 65%);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px}
+#gate .box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(6px);border-radius:20px;padding:34px 28px;max-width:420px;width:100%;text-align:center;color:#fff;animation:pop .5s cubic-bezier(.2,.9,.3,1.2) both}
+#gate .emoji{font-size:44px;display:block;margin-bottom:10px;animation:float 2.6s ease-in-out infinite}
+#gate h2{font-size:26px;margin-bottom:8px}
+#gate p{color:#C7D5EA;margin:0 0 20px;font-size:15px}
+#gate input{width:100%;padding:14px 16px;border-radius:12px;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font:600 17px var(--body);margin-bottom:14px}
+#gate input::placeholder{color:#8FA3C4}
+#gate input:focus{border-color:var(--gold)}
+body.locked{overflow:hidden}
+@keyframes pop{from{opacity:0;transform:scale(.9) translateY(10px)}to{opacity:1;transform:none}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+nav{position:sticky;top:0;z-index:5;background:var(--navy);border-bottom:3px solid var(--gold)}
+nav .wrap{display:flex;gap:4px;align-items:center;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav b{font:800 17px var(--display);color:#fff;margin-right:auto;white-space:nowrap}
+nav a{color:#DCE6F5;text-decoration:none;padding:6px 11px;border-radius:8px;font-weight:600;font-size:14px;white-space:nowrap;transition:background .15s,color .15s}
+nav a:hover,nav a:focus-visible{background:rgba(255,255,255,.14);color:#fff}
+
+.hero{background:linear-gradient(120deg,#0B2545,#163a73,#0B2545,#1c4d94);background-size:300% 300%;animation:gradientShift 9s ease infinite;color:#fff;padding:52px 0 60px;position:relative;overflow:hidden}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.hero .shield{position:absolute;font-size:38px;opacity:.18;animation:drift 7s ease-in-out infinite}
+.hero .shield.s1{top:18%;left:6%;animation-delay:.2s}
+.hero .shield.s2{top:65%;left:14%;font-size:26px;animation-delay:1.4s}
+.hero .shield.s3{top:30%;right:8%;font-size:30px;animation-delay:.8s}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-16px) rotate(8deg)}}
+.hero::after{content:"";position:absolute;right:-120px;top:-120px;width:420px;height:420px;border-radius:50%;border:56px solid rgba(244,180,0,.12);animation:spin 40s linear infinite}
+.hero::before{content:"";position:absolute;left:-90px;bottom:-110px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(31,95,191,.35),transparent 70%)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero .wrap{position:relative;z-index:1}
+.sitebadge{display:inline-flex;align-items:center;gap:8px;background:rgba(244,180,0,.14);border:1px solid rgba(244,180,0,.4);color:var(--gold);font:700 13px var(--display);letter-spacing:.03em;padding:6px 14px;border-radius:99px;margin-bottom:18px;animation:fadeDown .6s both}
+.hero h1{font-size:clamp(32px,6vw,54px);font-weight:800;letter-spacing:-.02em;max-width:18ch;animation:fadeUp .7s both .05s}
+#greet{color:var(--gold)}
+.hero p{color:#C7D5EA;max-width:52ch;margin:16px 0 26px;font-size:18px;animation:fadeUp .7s both .15s}
+.btn{display:inline-block;background:var(--gold);color:#1A1400;border:0;border-radius:10px;padding:14px 26px;font:700 16px var(--display);cursor:pointer;text-decoration:none;transition:transform .15s,box-shadow .15s}
+.btn:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.btn.alt{background:transparent;color:var(--ink);border:2px solid var(--line)}
+.btn.pulse{animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(244,180,0,.5)}50%{box-shadow:0 0 0 10px rgba(244,180,0,0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+
+section{padding:56px 0}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+.reveal.in{opacity:1;transform:none}
+section h2{font-size:clamp(26px,3.8vw,38px);font-weight:800;margin-bottom:8px}
+.tag{display:inline-block;background:var(--okbg);color:var(--ok);font:700 12px var(--display);letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:7px;margin-bottom:10px}
+.lead{color:var(--muted);max-width:62ch;margin:0 0 26px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;transition:transform .2s,box-shadow .2s}
+.card:hover,.links a:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 14px 28px rgba(11,37,69,.14)}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.reveal.in .card,.reveal.in .links a,.reveal.in details{animation:cardIn .5s both}
+.reveal.in .card:nth-child(2),.reveal.in .links a:nth-child(2),.reveal.in details:nth-child(2){animation-delay:.08s}
+.reveal.in .card:nth-child(3),.reveal.in .links a:nth-child(3),.reveal.in details:nth-child(3){animation-delay:.16s}
+.reveal.in .card:nth-child(4),.reveal.in .links a:nth-child(4),.reveal.in details:nth-child(4){animation-delay:.24s}
+.reveal.in .card:nth-child(5),.reveal.in .links a:nth-child(5),.reveal.in details:nth-child(5){animation-delay:.32s}
+.reveal.in .card:nth-child(6),.reveal.in .links a:nth-child(6),.reveal.in details:nth-child(6){animation-delay:.4s}
+.btn{position:relative;overflow:hidden}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);transform:scale(0);animation:rip .55s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(3);opacity:0}}
+summary{transition:background .2s}
+summary:hover{background:var(--bg)}
+
+/* facilitar estudos */
+.studycta{background:linear-gradient(135deg,var(--blue),#123b80);color:#fff;border-radius:20px;padding:34px 28px;text-align:center;position:relative;overflow:hidden}
+.studycta::after{content:"✨";position:absolute;font-size:90px;opacity:.12;right:10px;top:-10px}
+.studycta h3{font-size:26px;margin-bottom:8px}
+.studycta p{color:#DCE6F5;margin:0 0 18px}
+#wiz{max-width:640px;margin:0 auto}
+.wizq{display:none}
+.wizq.active{display:block;animation:fadeUp .4s both}
+.wizq p{font:700 19px var(--display);margin-bottom:14px}
+.wopt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:10px;font:500 16px var(--body);cursor:pointer;transition:border-color .15s,transform .15s}
+.wopt:hover{border-color:var(--blue);transform:translateX(4px)}
+.wprog{height:7px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:22px}
+.wprog i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));transition:width .35s}
+.wresult{background:var(--surface);border-radius:16px;padding:26px;text-align:left;color:var(--ink);animation:pop .4s both}
+.wresult h4{font-size:22px;margin-bottom:10px}
+.wresult ul{margin:10px 0;padding-left:20px;color:var(--muted)}
+.wresult li{margin-bottom:6px}
+
+.quiz{max-width:760px}
+.qtop{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-weight:600;font-size:14px;margin-bottom:10px}
+.prog{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:20px}
+.prog i{display:block;height:100%;background:var(--blue);transition:width .4s}
+.q{font:600 20px/1.4 var(--display);margin:0 0 18px;white-space:pre-line}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);color:var(--ink);border:2px solid var(--line);border-radius:12px;padding:13px 16px;margin-bottom:10px;font:500 16px var(--body);cursor:pointer;transition:border-color .15s,background .15s,transform .15s}
+.opt:hover:not(:disabled){border-color:var(--blue);transform:translateX(4px)}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--okbg);border-color:var(--ok)}
+.opt.bad{background:var(--badbg);border-color:var(--bad);animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.exp{margin:14px 0;padding:14px 16px;border-left:5px solid var(--blue);background:var(--bg);border-radius:0 10px 10px 0}
+.score{font:800 60px var(--display);color:var(--blue)}
+.split{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;transition:border-color .2s}
+details[open]{border-color:var(--blue)}
+summary{cursor:pointer;padding:15px 18px;font:700 17px var(--display);list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";font-size:22px;color:var(--blue);transition:transform .25s;flex:none}
+details[open] summary::after{transform:rotate(45deg)}
+details .inner{padding:0 18px 16px;color:var(--muted)}
+details li{margin:5px 0}
+details p{margin:8px 0}
+.ex{background:var(--bg);border-radius:10px;padding:10px 14px;margin:10px 0;font-size:15px}
+.ex b{color:var(--blue)}
+.links{display:grid;gap:12px}
+.links a{display:block;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:15px 18px;text-decoration:none;color:var(--ink);transition:border-color .15s,transform .15s}
+.links a:hover{border-color:var(--blue);transform:translateY(-2px)}
+.links b{display:block;color:var(--blue)}.links span{color:var(--muted);font-size:14px}
+.tips{columns:2 270px;column-gap:20px}.tips li{break-inside:avoid;margin-bottom:10px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+footer{background:var(--navy);color:#B9C9E2;padding:34px 0;font-size:14px}
+footer b{color:#fff}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body class="locked">
+
+<div id="gate">
+  <div class="box">
+    <span class="emoji">🛡️</span>
+    <h2>Bem-vindo ao Teste Guarda Mirim</h2>
+    <p>Antes de começar, qual é o seu nome?</p>
+    <input id="nameInput" type="text" placeholder="Digite seu nome" maxlength="30" autofocus>
+    <button class="btn" id="gateGo" style="width:100%">Entrar</button>
+  </div>
+</div>
+
+<nav><div class="wrap"><b>Teste Guarda Mirim</b><a href="#facilitar">Facilite seus estudos</a><a href="#inscricao">Inscrição</a><a href="#materia">Matéria</a><a href="#redacao">Redação</a><a href="#simulado">Simulado</a><a href="#provas">Provas</a></div></nav>
+
+<header class="hero"><div class="shield s1">🛡️</div><div class="shield s2">⭐</div><div class="shield s3">📝</div><div class="wrap">
+<span class="sitebadge">🛡️ Teste Guarda Mirim · por André Barbosa</span>
+<h1><span id="greet">Oi!</span><br>Teste Guarda-Mirim</h1>
+<p>Criado por André. Como se inscrever, o que cai, como resolver cada questão e um simulado com correção na hora — tudo em um só lugar.</p>
+<a class="btn pulse" href="#facilitar">Clique aqui e facilite seus estudos</a>
+</div></header>
+
+<section id="facilitar"><div class="wrap reveal">
+<div class="studycta">
+<h3>Vamos personalizar seu estudo, <span class="nm">?</span></h3>
+<p>Responda rapidinho e eu te digo por onde começar.</p>
+<div id="wiz">
+  <div class="wprog"><i id="wp" style="width:0%"></i></div>
+  <div class="wizq active" data-step="1">
+    <p>Qual matéria você quer estudar primeiro?</p>
+    <button class="wopt" data-k="materia" data-v="Matemática">Matemática</button>
+    <button class="wopt" data-k="materia" data-v="Português">Português</button>
+    <button class="wopt" data-k="materia" data-v="Redação">Redação</button>
+    <button class="wopt" data-k="materia" data-v="Não sei">Não sei, me ajuda a decidir</button>
+  </div>
+  <div class="wizq" data-step="2">
+    <p>Quantos anos você tem?</p>
+    <button class="wopt" data-k="idade" data-v="14">14 anos</button>
+    <button class="wopt" data-k="idade" data-v="15">15 anos</button>
+    <button class="wopt" data-k="idade" data-v="16">16 anos</button>
+    <button class="wopt" data-k="idade" data-v="17+">17 anos ou mais</button>
+  </div>
+  <div class="wizq" data-step="3">
+    <p>O que mais te complica nessa matéria?</p>
+    <div id="step3opts"></div>
+  </div>
+  <div class="wizq" data-step="4">
+    <p>Como está o seu nível nela hoje?</p>
+    <button class="wopt" data-k="nivel" data-v="Iniciante">Iniciante — ainda travo no básico</button>
+    <button class="wopt" data-k="nivel" data-v="Médio">Médio — erro de vez em quando</button>
+    <button class="wopt" data-k="nivel" data-v="Avançado">Avançado — quero só revisar</button>
+  </div>
+  <div class="wizq" data-step="5">
+    <div class="wresult" id="wresult"></div>
+  </div>
+</div>
+</div>
+</div></section>
+
+<section id="inscricao" style="background:var(--surface)"><div class="wrap reveal">
+<span class="tag">Inscrição</span>
+<h2>Com 14 ou 15 anos, já dá para se inscrever</h2>
+<p class="lead">Boa notícia: a inscrição e a prova da Guarda Mirim não são complicadas. É só seguir o passo a passo.</p>
+
+<details open><summary>Com 14 ou 15 anos eu já posso me inscrever?</summary><div class="inner">
+<p>Sim, tranquilamente. O programa costuma aceitar jovens a partir de 14 anos completos até 17 anos e 11 meses, sempre estudando e no contraturno da escola. A idade exata vem no edital da sua cidade.</p>
+</div></details>
+
+<details><summary>Quais documentos preciso separar?</summary><div class="inner"><ul>
+<li>RG ou certidão de nascimento</li>
+<li>CPF</li>
+<li>Comprovante de matrícula e frequência escolar</li>
+<li>Comprovante de residência</li>
+<li>Autorização dos pais ou responsável, já que você é menor de idade</li>
+</ul><p>É isso. Nada complicado — só não deixe para separar em cima da hora.</p></div></details>
+
+<details><summary>Precisa pagar alguma coisa?</summary><div class="inner">
+<p>Não. A inscrição é gratuita, pelo site da prefeitura. Desconfie de quem pedir pagamento ou senha para "garantir vaga".</p>
+</div></details>
+
+<details><summary>A prova é difícil?</summary><div class="inner">
+<p>Não costuma ser. O nível é de conhecimento básico: continhas de mais, menos, vezes, divisão e porcentagem, algumas questões de português, e uma redação curta no final. Dá para ir bem treinando pouco, com calma.</p>
+</div></details>
+</div></section>
+
+<section id="materia"><div class="wrap reveal">
+<span class="tag">Como resolver</span>
+<h2>O que cai e como resolver, passo a passo</h2>
+<p class="lead">Nada de decorar regra. É reconhecer o tipo de questão e saber o caminho.</p>
+
+<h3 style="margin:8px 0 14px;font-size:22px">Matemática</h3>
+
+<details><summary>Mais e menos (soma e subtração)</summary><div class="inner">
+<p><b>Como reconhecer:</b> "ao todo", "juntos", "ganhou mais" pedem soma. "Sobrou", "gastou", "deu", "perdeu" pedem subtração.</p>
+<p><b>Caminho:</b> quando a questão tem várias ações seguidas, resolva uma de cada vez, na ordem que elas acontecem.</p>
+<div class="ex"><b>Exemplo:</b> Ana tinha 45 figurinhas, ganhou 18 e depois deu 12. 45 + 18 = 63, depois 63 − 12 = 51.</div>
+</div></details>
+
+<details><summary>Vezes (multiplicação)</summary><div class="inner">
+<p><b>Como reconhecer:</b> "cada", "repetido várias vezes", "ao todo em grupos iguais".</p>
+<p><b>Caminho:</b> multiplique a quantidade de cada grupo pelo número de grupos.</p>
+<div class="ex"><b>Exemplo:</b> numa caixa cabem 8 bolas. Em 5 caixas: 8 × 5 = 40.</div>
+</div></details>
+
+<details><summary>Divisão</summary><div class="inner">
+<p><b>Como reconhecer:</b> "dividido entre", "cada um recebeu", "repartido igualmente".</p>
+<p><b>Caminho:</b> divida o total pelo número de partes ou de pessoas.</p>
+<div class="ex"><b>Exemplo:</b> 96 balas para 8 crianças: 96 ÷ 8 = 12 balas cada uma.</div>
+</div></details>
+
+<details><summary>Porcentagem</summary><div class="inner">
+<p><b>Como reconhecer:</b> a questão fala em %, desconto, aumento.</p>
+<p><b>Caminho:</b> p% de N = N × p ÷ 100.</p>
+<div class="ex"><b>Exemplo:</b> 15% de 80 → 80 × 15 ÷ 100 = 12. Dica: 25% é um quarto, 50% é metade — dá pra fazer de cabeça nesses casos.</div>
+</div></details>
+
+<details><summary>Regra de três (se cair)</summary><div class="inner">
+<p><b>Como reconhecer:</b> duas quantidades relacionadas ("3 custam 18, quanto custam 5") e pede a quarta.</p>
+<p><b>Caminho:</b> multiplique em cruz.</p>
+<div class="ex"><b>Exemplo:</b> 3 cadernos → R$ 18. 5 cadernos → x. 3 × x = 5 × 18 → x = 90 ÷ 3 = R$ 30.</div>
+</div></details>
+
+<h3 style="margin:30px 0 14px;font-size:22px">Português</h3>
+
+<details><summary>Interpretação de texto</summary><div class="inner">
+<p><b>Caminho:</b> leia a pergunta antes do texto todo, assim você já sabe o que procurar. A resposta quase sempre está escrita ali.</p>
+</div></details>
+
+<details><summary>Crase</summary><div class="inner">
+<p><b>Caminho:</b> use à quando der para trocar por "ao". "Vou à escola" vira "vou ao colégio" → tem crase.</p>
+</div></details>
+
+<details><summary>Concordância e pontuação</summary><div class="inner">
+<p><b>Caminho:</b> verbo combina em número com o sujeito. Vírgula separa itens de uma lista; ponto fecha a ideia.</p>
+</div></details>
+</div></section>
+
+<section id="redacao" style="background:var(--surface)"><div class="wrap reveal">
+<span class="tag">Redação</span>
+<h2>Como escrever a redação, por partes</h2>
+<p class="lead">A prova costuma ter uma redação curta no final. Uma estrutura simples resolve a maioria dos temas.</p>
+<div class="grid2">
+<div class="card"><b>1. Introdução (2 a 3 frases)</b><p style="color:var(--muted);margin:8px 0 0">Diga o assunto e o que você vai defender ou contar. Não repita a pergunta igualzinha.</p></div>
+<div class="card"><b>2. Desenvolvimento (1 ou 2 parágrafos)</b><p style="color:var(--muted);margin:8px 0 0">Uma ideia por parágrafo, com um exemplo ou motivo que sustente ela. Não misture vários assuntos na mesma frase.</p></div>
+<div class="card"><b>3. Conclusão (2 a 3 frases)</b><p style="color:var(--muted);margin:8px 0 0">Feche retomando a ideia principal. Pode propor algo, se o tema pedir.</p></div>
+<div class="card"><b>Cuidados na hora de escrever</b><p style="color:var(--muted);margin:8px 0 0">Evite gíria e abreviação. Releia procurando vírgula e ponto final faltando. Fuja de "etc" e de repetir a mesma palavra várias vezes.</p></div>
+</div>
+</div></section>
+
+<section id="simulado"><div class="wrap reveal">
+<span class="tag">Treino</span>
+<h2>Simulado de 16 questões</h2>
+<p class="lead">Português, matemática e conhecimentos gerais. Você vê o gabarito e a explicação logo depois de cada resposta.</p>
+<div class="card quiz" id="quiz"></div>
+</div></section>
+
+<section style="background:var(--surface)"><div class="wrap reveal">
+<h2>No dia da prova</h2>
+<ul class="tips">
+<li>Leia cada pergunta duas vezes antes de marcar.</li>
+<li>Pulou uma questão? Marque no caderno e volte depois. Não deixe nada em branco.</li>
+<li>Confira se o número marcado no cartão é o da questão certa.</li>
+<li>Leve documento, caneta azul ou preta e água.</li>
+<li>Durma bem na véspera. Descanso vale mais que mais uma hora de estudo.</li>
+</ul>
+</div></section>
+
+<section id="provas"><div class="wrap reveal">
+<span class="tag">Material oficial</span>
+<h2>Provas antigas e gabaritos</h2>
+<p class="lead">A Guarda Mirim da capital de São Paulo não publica o caderno completo. Estes materiais são de outras seleções e servem de treino com o mesmo formato.</p>
+<div class="links">
+<a href="https://selecao.sobral.ce.gov.br/arquivo/arquivo_selecao/nome:b4b20aaddefa6bd6d103286f8715a988.pdf" target="_blank" rel="noopener"><b>Prova completa Guarda Mirim 2026, Sobral/CE</b><span>Caderno oficial com as 30 questões, direto do site da prefeitura.</span></a>
+<a href="https://www.caraguatatuba.sp.gov.br/pmc/wp-content/uploads/2024/02/GABARITO-PROCESSO-SELETIVO-6.pdf" target="_blank" rel="noopener"><b>Gabarito Guarda Mirim 2024, Caraguatatuba/SP</b><span>30 questões: história da cidade, português e matemática.</span></a>
+<a href="https://www.caraguatatuba.sp.gov.br/pmc/category/processo-seletivo-guarda-mirim/" target="_blank" rel="noopener"><b>Editais e gabaritos, Caraguatatuba/SP</b><span>Página oficial da prefeitura com histórico do processo seletivo.</span></a>
+<a href="https://jrconcursos.com.br/provas-anteriores-de-guarda-municipal-2/" target="_blank" rel="noopener"><b>Provas de Guarda Municipal com gabarito</b><span>Mais questões de português e matemática para treinar.</span></a>
+</div>
+</div></section>
+
+<footer><div class="wrap"><b>Teste Guarda Mirim</b> — criado por André Barbosa.<br>Estude o que errou, descanse e confie no que treinou.</div></footer>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
+
+/* portão de entrada: nome */
+function applyName(n){document.querySelectorAll(".nm").forEach(function(e){e.textContent=n});$("greet").textContent="E aí, "+n+"!"}
+var savedName=store("gm-name");
+if(savedName){applyName(savedName);$("gate").style.display="none";document.body.classList.remove("locked")}
+$("gateGo").onclick=function(){var v=$("nameInput").value.trim();if(!v)v="campeão(ã)";store("gm-name",v);applyName(v);$("gate").style.display="none";document.body.classList.remove("locked")};
+$("nameInput").addEventListener("keydown",function(e){if(e.key==="Enter")$("gateGo").click()});
+
+/* animação ao rolar */
+var obs=new IntersectionObserver(function(entries){entries.forEach(function(en){if(en.isIntersecting)en.target.classList.add("in")})},{threshold:.12});
+document.querySelectorAll(".reveal").forEach(function(e){obs.observe(e)});
+
+/* wizard de estudos */
+var W={};
+var SUB3={
+ "Matemática":["Porcentagem","Regra de três","Mais, menos, vezes, divisão","Frações"],
+ "Português":["Interpretação de texto","Crase","Concordância e pontuação","Sinônimos e antônimos"],
+ "Redação":["Não sei como começar","Fico sem ideia no meio","Erro muita gramática","Fica curta demais"],
+ "Não sei":["Matemática em geral","Português em geral","Redação","Um pouco de tudo"]
+};
+function wsteps(){return document.querySelectorAll(".wizq")}
+function goStep(n){wsteps().forEach(function(s){s.classList.remove("active")});
+ document.querySelector('.wizq[data-step="'+n+'"]').classList.add("active");
+ $("wp").style.width=((n-1)/4*100)+"%"}
+function buildStep3(){var opts=SUB3[W.materia]||SUB3["Não sei"],h="";
+ opts.forEach(function(o){h+='<button class="wopt" data-k="foco" data-v="'+o+'">'+o+'</button>'});
+ $("step3opts").innerHTML=h;
+ $("step3opts").querySelectorAll(".wopt").forEach(function(b){b.onclick=function(){W.foco=b.dataset.v;goStep(4)}})}
+document.addEventListener("click",function(e){
+ var b=e.target.closest(".wopt");if(!b||!b.dataset.k)return;
+ W[b.dataset.k]=b.dataset.v;
+ if(b.dataset.k==="materia"){buildStep3();goStep(2)}
+ else if(b.dataset.k==="idade"){goStep(3)}
+ else if(b.dataset.k==="nivel"){showResult()}
+});
+function showResult(){
+ var n=store("gm-name")||"campeão(ã)";
+ var tips={
+  "Iniciante":"Comece pelo básico, sem pressa: reveja o exemplo resolvido em “"+(W.foco||W.materia)+"” na seção Matéria, depois tente 2 ou 3 questões parecidas antes de ir para o simulado.",
+  "Médio":"Você já manja o básico. Vá direto no simulado, erre à vontade, e sempre que errar volte na explicação de “"+(W.foco||W.materia)+"” para entender o motivo.",
+  "Avançado":"Foco em treino cronometrado: faça o simulado inteiro de uma vez e cuide só da velocidade e da atenção, já que o conteúdo você domina."
+ };
+ var h='<h4>Prontinho, '+n+'! Aqui está seu plano</h4><ul>'
+  +'<li>Prioridade: <b>'+(W.materia==="Não sei"?"vamos descobrir junto, comece pela Matéria":W.materia)+'</b>'+(W.foco?(" — "+W.foco):"")+'</li>'
+  +'<li>'+(tips[W.nivel]||tips["Médio"])+'</li>'
+  +'</ul><div class="split"><a class="btn" href="#materia">Ir para a Matéria</a><a class="btn alt" href="#simulado">Ir para o Simulado</a></div>';
+ $("wresult").innerHTML=h;goStep(5)
+}
+
+/* ondulação nos botões */
+document.addEventListener("click",function(e){
+ var b=e.target.closest(".btn");if(!b)return;
+ var r=b.getBoundingClientRect(),d=Math.max(r.width,r.height),s=document.createElement("span");
+ s.className="ripple";s.style.width=s.style.height=d+"px";
+ s.style.left=(e.clientX-r.left-d/2)+"px";s.style.top=(e.clientY-r.top-d/2)+"px";
+ b.appendChild(s);setTimeout(function(){s.remove()},600)
+});
+function confetti(){
+ var em=["\ud83c\udf89","\u2b50","\ud83c\udf86","\ud83d\udcaf","\ud83d\udee1\ufe0f"];
+ for(var i=0;i<24;i++){
+  var s=document.createElement("span");s.textContent=em[Math.floor(Math.random()*em.length)];
+  s.style.cssText="position:fixed;top:-30px;left:"+(Math.random()*100)+"vw;font-size:"+(18+Math.random()*16)+"px;z-index:60;pointer-events:none;transition:transform 2.4s cubic-bezier(.2,.6,.4,1),opacity 2.4s";
+  document.body.appendChild(s);
+  (function(el){requestAnimationFrame(function(){el.style.transform="translateY("+(100+Math.random()*20)+"vh) rotate("+(Math.random()*500-250)+"deg)";el.style.opacity="0"});setTimeout(function(){el.remove()},2500)})(s);
+ }
+}
+var Q=[
+{m:"Português",q:"Qual é o plural de “cidadão”?",o:["cidadões","cidadãos","cidadães","cidadãoes"],a:1,e:"O plural de cidadão é cidadãos, assim como mão vira mãos."},
+{m:"Português",q:"Qual frase usa a crase corretamente?",o:["Fui a escola ontem.","Fui à escola ontem.","Fui á escola ontem.","Fui às escola ontem."],a:1,e:"Quem vai, vai a algum lugar: a (preposição) + a (artigo) = à. Dá para trocar por “ao colégio”."},
+{m:"Português",q:"Qual frase está correta?",o:["Fazem dois anos que moro aqui.","Faz dois anos que moro aqui.","Houveram vários problemas.","Existe muitos alunos aqui."],a:1,e:"Quando indica tempo, o verbo fazer fica no singular: Faz dois anos."},
+{m:"Português",q:"Leia: “Pedro acordou cedo, arrumou a mochila e correu para o ponto, mas o ônibus já tinha partido. Chegou atrasado à escola.”\nPor que Pedro chegou atrasado?",o:["Acordou tarde.","Esqueceu a mochila.","Perdeu o ônibus.","Foi a pé."],a:2,e:"O texto diz que o ônibus já tinha partido quando ele chegou ao ponto."},
+{m:"Português",q:"Qual é o antônimo de “generoso”?",o:["bondoso","gentil","egoísta","paciente"],a:2,e:"Antônimo é o oposto. Quem é generoso divide, quem é egoísta pensa só em si."},
+{m:"Matemática",q:"Quanto é 25% de 240?",o:["50","60","75","80"],a:1,e:"240 × 25 ÷ 100 = 60. Também dá para pensar: 25% é um quarto, e 240 ÷ 4 = 60."},
+{m:"Matemática",q:"Ana tinha 45 figurinhas, ganhou 18 de um amigo e depois deu 12 para a irmã. Com quantas ficou?",o:["39","51","57","63"],a:1,e:"Primeiro soma (mais): 45 + 18 = 63. Depois subtrai (menos): 63 − 12 = 51."},
+{m:"Matemática",q:"Um ônibus tem 42 passageiros. Na primeira parada descem 15 e sobem 9. Com quantos passageiros o ônibus fica?",o:["18","27","36","48"],a:2,e:"Desceram (menos): 42 − 15 = 27. Subiram (mais): 27 + 9 = 36."},
+{m:"Matemática",q:"Numa caixa cabem 8 bolas. Quantas bolas cabem em 5 caixas?",o:["13","35","40","45"],a:2,e:"É multiplicação (vezes), não soma: 8 × 5 = 40."},
+{m:"Matemática",q:"96 balas foram divididas igualmente entre 8 crianças. Quantas balas cada uma recebeu?",o:["10","11","12","14"],a:2,e:"É divisão: 96 ÷ 8 = 12 balas para cada criança."},
+{m:"Matemática",q:"Uma calça custava R$ 80 e está com 15% de desconto. Qual é o valor do desconto?",o:["R$ 8","R$ 12","R$ 15","R$ 20"],a:1,e:"15% de 80 = 80 × 15 ÷ 100 = 12. O desconto é R$ 12 (o preço final ficaria R$ 68)."},
+{m:"Gerais",q:"Quem proclamou a República do Brasil, em 1889?",o:["Dom Pedro II","Getúlio Vargas","Deodoro da Fonseca","Tiradentes"],a:2,e:"O marechal Deodoro da Fonseca proclamou a República em 15 de novembro de 1889."},
+{m:"Gerais",q:"Em que data se comemora a Independência do Brasil?",o:["21 de abril","7 de setembro","15 de novembro","12 de outubro"],a:1,e:"A Independência foi proclamada em 7 de setembro de 1822."},
+{m:"Gerais",q:"Qual lei protege os direitos de crianças e adolescentes no Brasil?",o:["CLT","Código de Trânsito","ECA","Lei Maria da Penha"],a:2,e:"O Estatuto da Criança e do Adolescente (ECA) é a Lei nº 8.069, de 1990."},
+{m:"Gerais",q:"Qual número de telefone chama o SAMU?",o:["190","192","193","180"],a:1,e:"SAMU é 192. A Polícia Militar é 190 e os Bombeiros são 193."},
+{m:"Gerais",q:"Qual é a capital do Brasil?",o:["Rio de Janeiro","São Paulo","Salvador","Brasília"],a:3,e:"Brasília é a capital federal desde 1960."}
+];
+var list,idx,right,wrong,locked;
+function start(l){list=l;idx=0;right=0;wrong=[];show()}
+function show(){locked=false;var q=list[idx],h='<div class="qtop"><span>'+q.m+'</span><span>Questão '+(idx+1)+' de '+list.length+'</span></div><div class="prog"><i style="width:'+(idx/list.length*100)+'%"></i></div><p class="q"></p><div id="os"></div><div id="fb"></div>';
+ $("quiz").innerHTML=h;$("quiz").querySelector(".q").textContent=q.q;
+ q.o.forEach(function(t,i){var b=document.createElement("button");b.className="opt";b.textContent=String.fromCharCode(65+i)+") "+t;b.onclick=function(){pick(i)};$("os").appendChild(b)})}
+function pick(i){if(locked)return;locked=true;var q=list[idx],bs=$("os").children;
+ for(var k=0;k<bs.length;k++){bs[k].disabled=true;if(k===q.a)bs[k].classList.add("ok")}
+ if(i===q.a)right++;else{bs[i].classList.add("bad");wrong.push(q)}
+ var last=idx===list.length-1;
+ $("fb").innerHTML='<div class="exp"><b>'+(i===q.a?"Certo.":"Errou. A resposta é "+String.fromCharCode(65+q.a)+".")+'</b> '+q.e+'</div><button class="btn" id="nx">'+(last?"Ver resultado":"Próxima questão")+'</button>';
+ $("nx").onclick=function(){last?end():(idx++,show())};$("nx").focus()}
+function end(){var p=Math.round(right/list.length*100),best=parseInt(store("gm-best")||"0",10);
+ if(list.length===Q.length&&p>best){store("gm-best",String(p));best=p}
+ var n=store("gm-name")||"campeão(ã)";
+ var msg=p===100?"Nota máxima, "+n+". Agora é manter a calma.":p>=75?"Muito bom, "+n+"! Revise os erros e fica pronto.":"Dá para melhorar, "+n+". Veja a seção Matéria e refaça os erros.";
+ if(p===100)confetti();
+ $("quiz").innerHTML='<div class="qtop"><span>Resultado</span><span>Melhor simulado: '+best+'%</span></div><div class="score">'+right+"/"+list.length+'</div><p>'+msg+'</p><div class="split">'+(wrong.length?'<button class="btn" id="re">Refazer só os erros</button>':"")+'<button class="btn alt" id="rs">Recomeçar</button></div>';
+ if($("re"))$("re").onclick=function(){start(wrong.slice())};$("rs").onclick=function(){start(Q.slice())}}
+$("quiz").innerHTML='<p class="q">Pronto para treinar? Leva uns 15 minutos.</p><button class="btn" id="go">Começar simulado</button>';
+$("go").onclick=function(){start(Q.slice())};
+</script>
+</body>
+</html>
